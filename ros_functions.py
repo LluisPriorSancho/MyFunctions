@@ -2,7 +2,7 @@
 Module that implements different functions for ROS2 projects.
 """
 import math as m
-from geometry_msgs.msg import Vector3, Point
+from geometry_msgs.msg import Vector3, Point, Quaternion
 
 class MyROSFunctions:
     def __init__(self) -> None:
@@ -77,3 +77,70 @@ class MyROSFunctions:
         direction = MyROSFunctions.get_direction(initial_point, final_point, bias_ip, bias_fp)
         distance = m.sqrt(direction.x**2 + direction.y**2 + direction.z**2)
         return distance
+    
+    @staticmethod
+    def quaternion_to_euler(in_quaternion: bool,
+                            quaternion: Quaternion = Quaternion(),
+                            x: float = 0.0, 
+                            y: float = 0.0, 
+                            z: float = 0.0, 
+                            w: float = 0.0) -> tuple[float, float, float]:
+        """ Convert a quaternion into euler angles. Returns clockwise.
+
+        Args:
+            in_quaternion(bool): Indicates if the input is in geometry_msgs.quaternion variable type.
+            quaternion(Quaternion, optional): Input if the variable is in geometry_msgs.quaternion variable type.
+            x (float, optional): Quaternion x component.
+            y (float, optional): Quaternion y component.
+            z (float, optional): Quaternion z component.
+            w (float, optional): Quaternion w component.
+
+        Returns:
+            tuple[float, float, float]: roll, pitch, yaw in radians
+        """
+        if in_quaternion:
+            x, y, z, w = [quaternion.x, quaternion.y, quaternion.z, quaternion.w]
+        
+        t0 = +2.0 * (w * x + y * z)
+        t1 = +1.0 - 2.0 * (x * x + y * y)
+        roll_x = m.atan2(t0, t1)
+     
+        t2 = +2.0 * (w * y - z * x)
+        t2 = +1.0 if t2 > +1.0 else t2
+        t2 = -1.0 if t2 < -1.0 else t2
+        pitch_y = m.asin(t2)
+     
+        t3 = +2.0 * (w * z + x * y)
+        t4 = +1.0 - 2.0 * (y * y + z * z)
+        yaw_z = m.atan2(t3, t4)
+     
+        return roll_x, pitch_y, yaw_z 
+    
+    @staticmethod
+    def euler_to_quaternion(roll: float,
+                            pitch: float,
+                            yaw: float) -> tuple[float, float, float, float]:
+        """ Convert euler angles (ZYX) into quaternion.
+
+        Args:
+            roll (float): rotation around x-axis in radians.
+            pitch (float): rotation around y-axis in radians.
+            yaw (float): rotation around z-axis in radians.
+
+        Returns:
+            tuple[float, float, float, float]: The orientation in quaternion [x,y,z,w] format.
+        """
+        cr = m.cos(roll * 0.5)
+        sr = m.sin(roll * 0.5)
+        cp = m.cos(pitch * 0.5)
+        sp = m.sin(pitch * 0.5)
+        cy = m.cos(yaw * 0.5)
+        sy = m.sin(yaw * 0.5)
+        
+        qw = cr * cp * cy + sr * sp * sy
+        qx = sr * cp * cy - cr * sp * sy
+        qy = cr * sp * cy + sr * cp * sy
+        qz = cr * cp * sy - sr * sp * cy
+        return qx, qy, qz, qw
+    
+    
