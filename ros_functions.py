@@ -143,4 +143,32 @@ class MyROSFunctions:
         qz = cr * cp * sy - sr * sp * cy
         return qx, qy, qz, qw
     
-    
+    @staticmethod
+    def radians_to_degrees(radians):
+        """ Convert radians to degrees.
+
+        Args:
+            radians (float or list of floats): Angle(s) in radians.
+
+        Returns:
+            float or list of floats: Angle(s) in degrees.
+        """
+        if isinstance(radians, (list, tuple)):  # Handle lists or tuples
+            return [r * 180 / m.pi for r in radians]
+        else:  # Handle single float
+            return radians * 180 / m.pi
+        
+    @staticmethod
+    def degrees_to_radians(degrees):
+        """ Convert degrees to radians.
+
+        Args:
+            degrees (float or list of floats): Angle(s) in degrees.
+
+        Returns:
+            float or list of floats: Angle(s) in radians.
+        """
+        if isinstance(degrees, (list, tuple)):  # Handle lists or tuples
+            return [d * m.pi / 180 for d in degrees]
+        else:  # Handle single float
+            return degrees * m.pi / 180
