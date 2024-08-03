@@ -19,6 +19,8 @@ class BaseFunctions:
         """
         Sets the range values for limiting angles
         """
+        if new_up < new_bot:
+            raise ValueError(f"Error: new up value ({new_up}) must be greater than bot value ({new_bot}).")
         self.bot_range = new_bot
         self.up_range = new_up
 
@@ -52,6 +54,25 @@ class PIDController(BaseFunctions):
         self.angle = angle
         self.prev_error = 0
         self.integral = 0
+
+    @staticmethod
+    def get_PID_params(controller_type: str = "P",
+                       T: float = 0.0, 
+                       L: float = 0.0) -> tuple[float, float]:
+        """
+        Computes the Ziegler-Nichols PID parameters.
+
+            - T
+            - L
+        """
+        if T == L:
+            raise ValueError(f"Error: T ({T}) must be different from L ({L}).")
+        if controller_type == "P":
+            return T/L, m.inf, 0.0
+        elif controller_type == "PI":
+            return 0.9*T/L, L/0.3, 0
+        else: return 1.2*T/L, 2*L, 0.5*L
+
 
     def calc(self, state: float, 
                    target: float, 
