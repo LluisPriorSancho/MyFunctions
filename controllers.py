@@ -1,12 +1,12 @@
 """
-Module that implements different types of controllers
+Module that implements different types of controllers.
 """
 import math as m
 
 class BaseFunctions:
     def __init__(self, up_range: float = m.pi, 
                        bot_range: float = -m.pi) -> None:
-        """ This class implements basic functions for the different controllers. Inputs common parameters for the controllers
+        """ This class implements basic functions for the different controllers. Inputs common parameters for the controllers.
 
         Args:
             up_range (float, optional): Maximum value of the angle limitation. Defaults to m.pi.
@@ -17,14 +17,14 @@ class BaseFunctions:
         
 
     def set_limits_angle(self, new_up: float, new_bot: float) -> None:
-        """ Sets the range values for limiting angles
+        """ Sets the range values for limiting angles.
 
         Args:
-            new_up (float): New upper limit
-            new_bot (float): New lower limit
+            new_up (float): New upper limit.
+            new_bot (float): New lower limit.
 
         Raises:
-            ValueError: Upper limit must be bigger than the lower limit
+            ValueError: Upper limit must be bigger than the lower limit.
         """
         if new_up < new_bot:
             raise ValueError(f"Error: new up value ({new_up}) must be greater than bot value ({new_bot}).")
@@ -32,13 +32,13 @@ class BaseFunctions:
         self.up_range = new_up
 
     def limit_range_angle(self, value: float) -> float:
-        """ Returns an angle limited to the range [bot_range, up_range]
+        """ Returns an angle limited to the range [bot_range, up_range].
 
         Args:
-            value (float): Value to limit
+            value (float): Value to limit.
 
         Returns:
-            float: Limited value
+            float: Limited value.
         """
         while value < self.bot_range:
             value += 2 * m.pi
@@ -79,10 +79,10 @@ class PIDController(BaseFunctions):
             L (float, optional): Defaults to 0.0.
 
         Raises:
-            ValueError: T and L must be different
+            ValueError: T and L must be different.
 
         Returns:
-            tuple[float, float, float]: values of Kp, Ki and Kd
+            tuple[float, float, float]: values of Kp, Ki and Kd.
         """
         if T == L:
             raise ValueError(f"Error: T ({T}) must be different from L ({L}).")
@@ -100,13 +100,13 @@ class PIDController(BaseFunctions):
         """ Computes one step of the controller.
 
         Args:
-            state (float): Actual value of the controlled variable
-            target (float): Goal value of the controlled variable
-            dt (float): Time step
+            state (float): Actual value of the controlled variable.
+            target (float): Goal value of the controlled variable.
+            dt (float): Time step.
             bias (float, optional): Offset added to the controlled action. Defaults to 0.0.
 
         Returns:
-            float: New control action
+            float: New control action.
         """
         error = target - state
         if self.angle:
@@ -137,11 +137,11 @@ class OnOffController(BaseFunctions):
         """ Computes one step of the controller. 
 
         Args:
-            state (float): Actual value of the controlled variable
-            target (float): Goal value of the controlled variable
+            state (float): Actual value of the controlled variable.
+            target (float): Goal value of the controlled variable.
 
         Returns:
-            bool: Returns True/False depending on the state of action
+            bool: Returns True/False depending on the state of action.
         """
         if self.angle:
             state = self.limit_range_angle(state)
